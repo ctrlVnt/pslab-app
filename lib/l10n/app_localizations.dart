@@ -2790,6 +2790,126 @@ abstract class AppLocalizations {
   /// **'Estimated'**
   String get estimated;
 
+  /// No description provided for @experiments.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiments'**
+  String get experiments;
+
+  /// No description provided for @startExperiment.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Experiment'**
+  String get startExperiment;
+
+  /// No description provided for @lightIntensityVsDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Intensity vs Distance'**
+  String get lightIntensityVsDistance;
+
+  /// No description provided for @lightIntensityVsDistanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Measure how light intensity changes with distance from the source'**
+  String get lightIntensityVsDistanceDesc;
+
+  /// No description provided for @stepCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Step Completed!'**
+  String get stepCompleted;
+
+  /// No description provided for @endExperiment.
+  ///
+  /// In en, this message translates to:
+  /// **'End Experiment'**
+  String get endExperiment;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// No description provided for @step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get step;
+
+  /// No description provided for @experimentCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiment Completed'**
+  String get experimentCompleted;
+
+  /// No description provided for @setUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup'**
+  String get setUp;
+
+  /// No description provided for @lightExperimentSetUpContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your device near a light source (lamp, window, or flashlight).'**
+  String get lightExperimentSetUpContent;
+
+  /// No description provided for @preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation'**
+  String get preparation;
+
+  /// No description provided for @lightExperimentPreparationContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure you have space to move towards the light source gradually.'**
+  String get lightExperimentPreparationContent;
+
+  /// No description provided for @instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get instructions;
+
+  /// No description provided for @lightExperimentInstructionContent.
+  ///
+  /// In en, this message translates to:
+  /// **'You will measure light intensity at different distances. Follow the on-screen prompts to move closer or farther from the light source.'**
+  String get lightExperimentInstructionContent;
+
+  /// No description provided for @moveTowardsLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Move towards the light source'**
+  String get moveTowardsLight;
+
+  /// No description provided for @moveAwayFromLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Move away from the light source'**
+  String get moveAwayFromLight;
+
+  /// No description provided for @holdPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your position and let the reading stabilize'**
+  String get holdPosition;
+
+  /// No description provided for @followInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the on-screen instructions to set up your experiment.'**
+  String get followInstructions;
+
   /// No description provided for @gesture.
   ///
   /// In en, this message translates to:

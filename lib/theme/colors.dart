@@ -88,3 +88,4 @@ List<Color> apds9960ChartColors = [Colors.blue, Colors.yellow];
 Color buttonEnabledColor = primaryRed;
 Color buttonDisabledColor = Color.fromARGB(255, 240, 162, 162);
 Color waveGeneratorPropTextColor = Colors.deepOrange;
+List<Color> stepCompletedColor = [Colors.green.shade400, Colors.green.shade600];

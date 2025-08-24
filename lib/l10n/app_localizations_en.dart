@@ -1446,6 +1446,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get estimated => 'Estimated';
 
   @override
+  String get experiments => 'Experiments';
+
+  @override
+  String get startExperiment => 'Start Experiment';
+
+  @override
+  String get lightIntensityVsDistance => 'Light Intensity vs Distance';
+
+  @override
+  String get lightIntensityVsDistanceDesc =>
+      'Measure how light intensity changes with distance from the source';
+
+  @override
+  String get stepCompleted => 'Step Completed!';
+
+  @override
+  String get endExperiment => 'End Experiment';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get step => 'Step';
+
+  @override
+  String get experimentCompleted => 'Experiment Completed';
+
+  @override
+  String get setUp => 'Setup';
+
+  @override
+  String get lightExperimentSetUpContent =>
+      'Place your device near a light source (lamp, window, or flashlight).';
+
+  @override
+  String get preparation => 'Preparation';
+
+  @override
+  String get lightExperimentPreparationContent =>
+      'Make sure you have space to move towards the light source gradually.';
+
+  @override
+  String get instructions => 'Instructions';
+
+  @override
+  String get lightExperimentInstructionContent =>
+      'You will measure light intensity at different distances. Follow the on-screen prompts to move closer or farther from the light source.';
+
+  @override
+  String get moveTowardsLight => 'Move towards the light source';
+
+  @override
+  String get moveAwayFromLight => 'Move away from the light source';
+
+  @override
+  String get holdPosition => 'Hold your position and let the reading stabilize';
+
+  @override
+  String get followInstructions =>
+      'Follow the on-screen instructions to set up your experiment.';
+
+  @override
   String get gesture => 'Gesture';
 
   @override
@@ -1475,6 +1540,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get lux => 'Lux';
 
+  @override
   String get distance => 'Distance';
 
   @override
