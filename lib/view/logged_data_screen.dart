@@ -10,6 +10,7 @@ import 'package:pslab/view/luxmeter_screen.dart';
 import 'package:pslab/view/map_screen.dart';
 import 'package:pslab/view/multimeter_screen.dart';
 import 'package:pslab/view/oscilloscope_screen.dart';
+import 'package:pslab/view/power_source_screen.dart';
 import 'package:pslab/view/soundmeter_screen.dart';
 import 'package:pslab/view/wave_generator_screen.dart';
 import '../l10n/app_localizations.dart';
@@ -213,6 +214,13 @@ class _LoggedDataScreenState extends State<LoggedDataScreen> {
             ),
           );
           break;
+        case 'power source':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PowerSourceScreen(playbackData: data),
+            ),
+          );
         case 'luxmeter':
           Navigator.push(
             context,
@@ -426,6 +434,9 @@ class _LoggedDataScreenState extends State<LoggedDataScreen> {
                                           .toLowerCase() ||
                                   instrumentName ==
                                       appLocalizations.barometer
+                                          .toLowerCase() ||
+                                  instrumentName ==
+                                      appLocalizations.powerSource
                                           .toLowerCase() ||
                                   instrumentName ==
                                       appLocalizations.gyroscope
