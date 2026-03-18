@@ -3,7 +3,17 @@ name: Build
 on:
   pull_request:
     branches: ["flutter"]
-
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '**.png'
+      - '**.jpg'
+      - '**.jpeg'
+      - '**.gif'
+      - '**.svg'
+      - '**.webp'
+      - '**.txt'
+      - '**.arb'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
