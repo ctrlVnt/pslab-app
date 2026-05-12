@@ -101,13 +101,13 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
     });
 
     _instrumentDatas = [
-      _InstrumentData(appLocalizations.oscilloscope,
-          appLocalizations.oscilloscopeDesc, '/oscilloscope', ['pslab_board', 'internal_sensors']),
       _InstrumentData(
-          appLocalizations.multimeter,
-          appLocalizations.multimeterDesc,
-          '/multimeter',
-          ['pslab_board']),
+          appLocalizations.oscilloscope,
+          appLocalizations.oscilloscopeDesc,
+          '/oscilloscope',
+          ['pslab_board', 'internal_sensors']),
+      _InstrumentData(appLocalizations.multimeter,
+          appLocalizations.multimeterDesc, '/multimeter', ['pslab_board']),
       _InstrumentData(
           appLocalizations.logicAnalyzer,
           appLocalizations.logicAnalyzerDesc,
@@ -120,11 +120,8 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           appLocalizations.waveGeneratorDesc,
           '/waveGenerator',
           ['pslab_board', 'internal_sensors']),
-      _InstrumentData(
-          appLocalizations.powerSource,
-          appLocalizations.powerSourceDesc,
-          '/powerSource',
-          ['pslab_board']),
+      _InstrumentData(appLocalizations.powerSource,
+          appLocalizations.powerSourceDesc, '/powerSource', ['pslab_board']),
       _InstrumentData(appLocalizations.luxMeter, appLocalizations.luxMeterDesc,
           '/luxmeter', ['pslab_board', 'internal_sensors']),
       _InstrumentData(
@@ -149,11 +146,8 @@ class _InstrumentsScreenState extends State<InstrumentsScreen> {
           appLocalizations.thermometerDesc,
           '/thermometer',
           ['pslab_board', 'internal_sensors']),
-      _InstrumentData(
-          appLocalizations.roboticArm,
-          appLocalizations.roboticArmDesc,
-          '/roboticArm',
-          ['pslab_board']),
+      _InstrumentData(appLocalizations.roboticArm,
+          appLocalizations.roboticArmDesc, '/roboticArm', ['pslab_board']),
       // Instruments below are not yet implemented.
       //_InstrumentData(appLocalizations.gasSensor, appLocalizations.gasSensorDesc, '/gassensor'),
       //_InstrumentData(appLocalizations.dustSensor, appLocalizations.dustSensorDesc, '/dustsensor'),

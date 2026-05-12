@@ -203,61 +203,61 @@ class _MainScaffoldState extends State<MainScaffold>
                 ),
                 Consumer<BoardStateProvider>(
                   builder: (context, provider, _) {
-                    if(provider.selectedHardware != "") {
+                    if (provider.selectedHardware != "") {
                       return PopupMenuButton<String>(
-                      tooltip: appLocalizations.changeHardware,
-                      onSelected: (String value) {
-                        if (value == 'change') {
-                          Navigator.pushNamed(context, '/selectHardware');
-                        }
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          children: [
-                            Text(
+                        tooltip: appLocalizations.changeHardware,
+                        onSelected: (String value) {
+                          if (value == 'change') {
+                            Navigator.pushNamed(context, '/selectHardware');
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              Text(
+                                provider.selectedHardware == "pslab_board"
+                                    ? appLocalizations.psLab
+                                    : appLocalizations.internalSensors,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const Icon(Icons.arrow_drop_down,
+                                  color: Colors.white),
+                            ],
+                          ),
+                        ),
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'status',
+                            enabled: false,
+                            child: Text(
                               provider.selectedHardware == "pslab_board"
                                   ? appLocalizations.psLab
                                   : appLocalizations.internalSensors,
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
+                                  fontSize: 12, color: Colors.grey),
                             ),
-                            const Icon(Icons.arrow_drop_down,
-                                color: Colors.white),
-                          ],
-                        ),
-                      ),
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'status',
-                          enabled: false,
-                          child: Text(
-                            provider.selectedHardware == "pslab_board"
-                                ? appLocalizations.psLab
-                                : appLocalizations.internalSensors,
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey),
                           ),
-                        ),
-                        const PopupMenuDivider(),
-                        PopupMenuItem<String>(
-                          value: 'change',
-                          child: Row(
-                            children: [
-                              Icon(Icons.sync, color: Colors.black54),
-                              SizedBox(width: 8),
-                              Text(appLocalizations.changeHardware),
-                            ],
+                          const PopupMenuDivider(),
+                          PopupMenuItem<String>(
+                            value: 'change',
+                            child: Row(
+                              children: [
+                                Icon(Icons.sync, color: Colors.black54),
+                                SizedBox(width: 8),
+                                Text(appLocalizations.changeHardware),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                    }else{
+                        ],
+                      );
+                    } else {
                       return SizedBox.shrink();
                     }
                   },

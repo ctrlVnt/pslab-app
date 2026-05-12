@@ -32,8 +32,8 @@ class _HardwareSelectionScreenState extends State<HardwareSelectionScreen> {
     super.initState();
     _options = [
       _HardwareOption(appLocalizations.psLabBoard, Icons.usb, "pslab_board"),
-      _HardwareOption(
-          appLocalizations.internalSensors, Icons.developer_board, "internal_sensors"),
+      _HardwareOption(appLocalizations.internalSensors, Icons.developer_board,
+          "internal_sensors"),
     ];
   }
 
@@ -86,11 +86,15 @@ class _HardwareSelectionScreenState extends State<HardwareSelectionScreen> {
                             borderRadius: BorderRadius.circular(12)),
                         backgroundColor: primaryRed,
                       ),
-                      onPressed: () => _selectHardware(
-                          option.value),
-                      icon: Icon(option.icon, size: 28, color: chartTextColor,),
+                      onPressed: () => _selectHardware(option.value),
+                      icon: Icon(
+                        option.icon,
+                        size: 28,
+                        color: chartTextColor,
+                      ),
                       label: Text(option.label,
-                          style: TextStyle(fontSize: 18, color: chartTextColor)),
+                          style:
+                              TextStyle(fontSize: 18, color: chartTextColor)),
                     ),
                   )),
             ],
