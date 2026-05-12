@@ -667,6 +667,8 @@
     "stopSound" : "Stop Sound",
     "saw" : "Saw",
     "comingSoon": "Coming Soon",
+    "startRecording": "Start Recording",
+    "stopRecording": "Stop Recording",
     "changeHardware": "Change Hardware",
     "psLab": "PSLab",
     "psLabBoard": "PSLab Board",
