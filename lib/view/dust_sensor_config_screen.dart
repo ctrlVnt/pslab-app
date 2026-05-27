@@ -112,9 +112,6 @@ class _DustSensorConfigScreenState extends State<DustSensorConfigScreen> {
                       title: appLocalizations.activeSensor,
                       selectedValue: provider.config.activeSensor,
                       options: [
-                        ConfigOption(
-                            value: 'In-built Sensor',
-                            displayName: appLocalizations.inBuiltSensor),
                         const ConfigOption(
                             value: 'SDS011', displayName: 'SDS011'),
                       ],
