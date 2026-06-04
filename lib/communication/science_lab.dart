@@ -1392,4 +1392,38 @@ class ScienceLab {
       logger.e("Error in servo4(): $e");
     }
   }
+
+  Future<void> configureUART({required int baudRate}) async {
+    if (!isConnected()) return;
+
+    try {
+      mPacketHandler.sendByte(mCommandsProto.uart2);
+      mPacketHandler.sendByte(mCommandsProto.setBaud);
+      mPacketHandler.sendInt(baudRate);
+
+      await mPacketHandler.getAcknowledgement();
+      logger.i("UART2 peripheral successfully configured at $baudRate baud.");
+    } catch (e) {
+      logger.e("Error configuring UART2: $e");
+      rethrow;
+    }
+  }
+
+  Future<List<int>> readUARTBytes(int bytesToRead) async {
+    if (!isConnected()) return [];
+
+    try {
+      mPacketHandler.sendByte(mCommandsProto.uart2);
+      mPacketHandler.sendByte(mCommandsProto.readByte);
+      mPacketHandler.sendByte(bytesToRead);
+
+      Uint8List rawBuffer = Uint8List(bytesToRead);
+      await mPacketHandler.read(rawBuffer, bytesToRead);
+
+      return rawBuffer.map((b) => b & 0xFF).toList();
+    } catch (e) {
+      logger.e("Error reading bytes from UART2: $e");
+      return [];
+    }
+  }
 }

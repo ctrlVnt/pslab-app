@@ -300,10 +300,10 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
         final screenWidth = MediaQuery.of(context).size.width;
         final cardMargin = screenWidth < 400 ? 8.0 : 12.0;
         final cardPadding = screenWidth < 400 ? 2.0 : 5.0;
-        List<FlSpot> spots = provider.getPPMChartData();
+        List<FlSpot> spots = provider.getDustChartData();
         double maxTime = provider.getMaxTime();
         double minTime = provider.getMinTime();
-        double maxPPM = provider.getMaxPPM();
+        double maxPM25 = provider.getMaxDust();
         double timeInterval = provider.getTimeInterval();
         return Container(
           margin: EdgeInsets.fromLTRB(cardMargin, 0, cardMargin, cardMargin),
@@ -313,7 +313,7 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
             borderRadius: BorderRadius.zero,
           ),
           child: _buildChart(
-              screenWidth, maxTime, minTime, maxPPM, timeInterval, spots),
+              screenWidth, maxTime, minTime, maxPM25, timeInterval, spots),
         );
       },
     );
@@ -353,7 +353,7 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
   }
 
   Widget _buildChart(double screenWidth, double maxTime, double minTime,
-      double maxPPM, double timeInterval, List<FlSpot> spots) {
+      double maxPM25, double timeInterval, List<FlSpot> spots) {
     final chartFontSize = screenWidth < 400
         ? 8.0
         : screenWidth < 600
@@ -362,7 +362,7 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
     final axisNameFontSize = screenWidth < 400 ? 9.0 : 10.0;
     final reservedSizeBottom = screenWidth < 400 ? 25.0 : 30.0;
     final reservedSizeLeft = screenWidth < 400 ? 25.0 : 30.0;
-    double yInterval = maxPPM > 50 ? (maxPPM / 5).roundToDouble() : 10;
+    double yInterval = maxPM25 > 50 ? (maxPM25 / 5).roundToDouble() : 10;
 
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
@@ -395,7 +395,7 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
             ),
             leftTitles: AxisTitles(
               axisNameWidget: Text(
-                appLocalizations.ppm,
+                'PM2.5 (µg/m³)',
                 style: TextStyle(
                   fontSize: axisNameFontSize,
                   color: chartTextColor,
@@ -443,7 +443,7 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
             ),
           ),
           minY: 0,
-          maxY: maxPPM > 0 ? maxPPM * 1.2 : 50,
+          maxY: maxPM25 > 0 ? maxPM25 * 1.2 : 50,
           maxX: maxTime > 0 ? maxTime : 10,
           minX: minTime,
           clipData: const FlClipData.all(),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -14,20 +15,29 @@ import 'locator.dart';
 
 class DustSensorStateProvider extends ChangeNotifier {
   AppLocalizations appLocalizations = getIt.get<AppLocalizations>();
-  double _currentDust = 0.0;
+
+  double _currentPM25 = 0.0;
+  double _currentPM10 = 0.0;
+
   Timer? _timeTimer;
   Timer? _dustTimer;
-  final List<double> _dustData = [];
+
+  final List<double> _pm25Data = [];
+  final List<double> _pm10Data = [];
   final List<double> _timeData = [];
-  final List<FlSpot> dustChartData = [];
-  final List<FlSpot> ppmChartData = [];
+
+  final List<FlSpot> pm25ChartData = [];
+  final List<FlSpot> pm10ChartData = [];
+
   double _startTime = 0;
   double _currentTime = 0;
   final int _chartMaxLength = 50;
-  double _dustMin = 0;
-  double _dustMax = 0;
-  double _dustSum = 0;
+
+  double _pm25Min = 0;
+  double _pm25Max = 0;
+  double _pm25Sum = 0;
   int _dataCount = 0;
+
   bool _isRecording = false;
   List<List<dynamic>> _recordedData = [];
   bool _isPlayingBack = false;
@@ -35,6 +45,7 @@ class DustSensorStateProvider extends ChangeNotifier {
   int _playbackIndex = 0;
   Timer? _playbackTimer;
   bool _isPlaybackPaused = false;
+
   bool get isRecording => _isRecording;
   bool get isPlayingBack => _isPlayingBack;
   bool get isPlaybackPaused => _isPlaybackPaused;
@@ -93,6 +104,9 @@ class DustSensorStateProvider extends ChangeNotifier {
     try {
       ScienceLab scienceLab = getIt.get<ScienceLab>();
 
+      await scienceLab.configureUART(baudRate: 9600);
+      await Future.delayed(const Duration(milliseconds: 500));
+
       _startTime = DateTime.now().millisecondsSinceEpoch / 1000.0;
 
       _timeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -102,13 +116,29 @@ class DustSensorStateProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      int interval = _configProvider?.config.updatePeriod ?? 1000;
-      _dustTimer =
-          Timer.periodic(Duration(milliseconds: interval), (timer) async {
-        double voltageReading = await scienceLab.getVoltage("CH1", 1);
+      _dustTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        List<int> rxBytes = await scienceLab.readUARTBytes(10);
 
-        _currentDust = voltageReading;
-        notifyListeners();
+        if (rxBytes.length == 10 && rxBytes[0] == 0xAA && rxBytes[9] == 0xAB) {
+          int checksum = 0;
+          for (int i = 2; i <= 7; i++) {
+            checksum += rxBytes[i];
+          }
+
+          if ((checksum & 0xFF) == rxBytes[8]) {
+            int pm25Low = rxBytes[2];
+            int pm25High = rxBytes[3];
+            int pm10Low = rxBytes[4];
+            int pm10High = rxBytes[5];
+
+            _currentPM25 = ((pm25High * 256) + pm25Low) / 10.0;
+            _currentPM10 = ((pm10High * 256) + pm10Low) / 10.0;
+
+            notifyListeners();
+          } else {
+            logger.w("SDS011: Checksum packet error");
+          }
+        }
       });
     } catch (e) {
       logger.e("Dust sensor initialization error: $e");
@@ -117,7 +147,7 @@ class DustSensorStateProvider extends ChangeNotifier {
   }
 
   void _handleSensorError(dynamic error) {
-    onSensorError?.call("Unable to access dust sensor");
+    onSensorError?.call("Unable to access SDS011 sensor via UART");
     logger.e("Dust sensor error: $error");
   }
 
@@ -137,13 +167,14 @@ class DustSensorStateProvider extends ChangeNotifier {
     _timeTimer?.cancel();
     _dustTimer?.cancel();
 
-    _dustData.clear();
-    dustChartData.clear();
-    ppmChartData.clear();
+    _pm25Data.clear();
+    _pm10Data.clear();
+    pm25ChartData.clear();
+    pm10ChartData.clear();
     _timeData.clear();
     _startTime = DateTime.now().millisecondsSinceEpoch / 1000.0;
     _currentTime = 0;
-    _dustSum = 0;
+    _pm25Sum = 0;
     _dataCount = 0;
 
     _startPlaybackTimer();
@@ -157,8 +188,9 @@ class DustSensorStateProvider extends ChangeNotifier {
     }
 
     final currentRow = _playbackData![_playbackIndex];
-    if (currentRow.length > 2) {
-      _currentDust = double.tryParse(currentRow[2].toString()) ?? 0.0;
+    if (currentRow.length > 3) {
+      _currentPM25 = double.tryParse(currentRow[2].toString()) ?? 0.0;
+      _currentPM10 = double.tryParse(currentRow[3].toString()) ?? 0.0;
       _currentTime = (_playbackIndex - 1).toDouble();
       _updateData();
       _playbackIndex++;
@@ -182,11 +214,6 @@ class DustSensorStateProvider extends ChangeNotifier {
         if (currentTimestamp != null && nextTimestamp != null) {
           final timeDiff = nextTimestamp - currentTimestamp;
           interval = Duration(milliseconds: timeDiff);
-          if (interval.inMilliseconds < 100) {
-            interval = const Duration(milliseconds: 100);
-          } else if (interval.inMilliseconds > 10000) {
-            interval = const Duration(seconds: 10);
-          }
         }
       } catch (e) {
         interval = const Duration(seconds: 1);
@@ -207,13 +234,15 @@ class DustSensorStateProvider extends ChangeNotifier {
     _playbackData = null;
     _playbackIndex = 0;
 
-    _dustData.clear();
-    dustChartData.clear();
-    ppmChartData.clear();
+    _pm25Data.clear();
+    _pm10Data.clear();
+    pm25ChartData.clear();
+    pm10ChartData.clear();
     _timeData.clear();
-    _dustSum = 0;
+    _pm25Sum = 0;
     _dataCount = 0;
-    _currentDust = 0.0;
+    _currentPM25 = 0.0;
+    _currentPM10 = 0.0;
     _currentTime = 0;
     notifyListeners();
     onPlaybackEnd?.call();
@@ -246,7 +275,8 @@ class DustSensorStateProvider extends ChangeNotifier {
   }
 
   void _updateData() {
-    final dust = _currentDust;
+    final pm25 = _currentPM25;
+    final pm10 = _currentPM10;
     final time = _currentTime;
     if (_isRecording) {
       final now = DateTime.now();
@@ -254,7 +284,8 @@ class DustSensorStateProvider extends ChangeNotifier {
       _recordedData.add([
         now.millisecondsSinceEpoch.toString(),
         dateFormat.format(now),
-        dust.toStringAsFixed(2),
+        pm25.toStringAsFixed(2),
+        pm10.toStringAsFixed(2),
         _configProvider!.config.includeLocationData
             ? currentPosition?.latitude.toString() ?? 0
             : 0,
@@ -263,25 +294,32 @@ class DustSensorStateProvider extends ChangeNotifier {
             : 0
       ]);
     }
-    _dustData.add(dust);
+
+    _pm25Data.add(pm25);
+    _pm10Data.add(pm10);
     _timeData.add(time);
-    _dustSum += dust;
+    _pm25Sum += pm25;
     _dataCount++;
-    if (_dustData.length > _chartMaxLength) {
-      final removedValue = _dustData.removeAt(0);
+
+    if (_pm25Data.length > _chartMaxLength) {
+      final removedPM25 = _pm25Data.removeAt(0);
+      _pm10Data.removeAt(0);
       _timeData.removeAt(0);
-      _dustSum -= removedValue;
+      _pm25Sum -= removedPM25;
       _dataCount--;
     }
-    if (_dustData.isNotEmpty) {
-      _dustMin = _dustData.reduce(min);
-      _dustMax = _dustData.reduce(max);
+
+    if (_pm25Data.isNotEmpty) {
+      _pm25Min = _pm25Data.reduce(min);
+      _pm25Max = _pm25Data.reduce(max);
     }
-    dustChartData.clear();
-    ppmChartData.clear();
-    for (int i = 0; i < _dustData.length; i++) {
-      dustChartData.add(FlSpot(_timeData[i], _dustData[i]));
-      ppmChartData.add(FlSpot(_timeData[i], _dustData[i] * 0.1));
+
+    pm25ChartData.clear();
+    pm10ChartData.clear();
+
+    for (int i = 0; i < _pm25Data.length; i++) {
+      pm25ChartData.add(FlSpot(_timeData[i], _pm25Data[i]));
+      pm10ChartData.add(FlSpot(_timeData[i], _pm10Data[i]));
     }
     notifyListeners();
   }
@@ -292,7 +330,14 @@ class DustSensorStateProvider extends ChangeNotifier {
     }
     _isRecording = true;
     _recordedData = [
-      ['Timestamp', 'DateTime', 'Readings', 'Latitude', 'Longitude']
+      [
+        'Timestamp',
+        'DateTime',
+        'PM2.5',
+        'PM10',
+        'Latitude',
+        'Longitude'
+      ]
     ];
     notifyListeners();
   }
@@ -306,22 +351,22 @@ class DustSensorStateProvider extends ChangeNotifier {
     return _recordedData;
   }
 
-  double getCurrentDust() => _currentDust;
-  double getMinDust() => _dustMin;
-  double getMaxDust() => _dustMax;
-  double getAverageDust() => _dataCount > 0 ? _dustSum / _dataCount : 0.0;
-  double getPPM() => _currentDust * 0.1;
-  double getMaxPPM() => _dustMax * 0.1;
+  double getCurrentDust() => _currentPM25;
+  double getCurrentPM10() => _currentPM10;
+  double getMinDust() => _pm25Min;
+  double getMaxDust() => _pm25Max;
+  double getAverageDust() => _dataCount > 0 ? _pm25Sum / _dataCount : 0.0;
+
   String getAirQuality() {
-    if (_currentDust < 300) return appLocalizations.good;
-    if (_currentDust < 1000) return appLocalizations.moderate;
-    if (_currentDust < 3000) return appLocalizations.unhealthy;
+    if (_currentPM25 < 15.0) return appLocalizations.good;
+    if (_currentPM25 < 35.0) return appLocalizations.moderate;
+    if (_currentPM25 < 55.0) return appLocalizations.unhealthy;
     return appLocalizations.hazardous;
   }
 
-  List<FlSpot> getDustChartData() => dustChartData;
-  List<FlSpot> getPPMChartData() => ppmChartData;
-  int getDataLength() => dustChartData.length;
+  List<FlSpot> getDustChartData() => pm25ChartData;
+  List<FlSpot> getPM10ChartData() => pm10ChartData;
+  int getDataLength() => pm25ChartData.length;
   double getCurrentTime() => _currentTime;
   double getMaxTime() => _timeData.isNotEmpty ? _timeData.last : 0;
   double getMinTime() => _timeData.isNotEmpty ? _timeData.first : 0;

@@ -19,8 +19,9 @@ class _DustSensorCardState extends State<DustSensorCard> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth > 900;
     DustSensorStateProvider provider =
-        Provider.of<DustSensorStateProvider>(context);
-    double ppm = provider.getPPM();
+    Provider.of<DustSensorStateProvider>(context);
+
+    double pm25 = provider.getCurrentDust();
     String airQuality = provider.getAirQuality();
     final cardMargin = screenWidth < 400 ? 8.0 : 12.0;
     final cardPadding = screenWidth < 400 ? 12.0 : 20.0;
@@ -52,10 +53,10 @@ class _DustSensorCardState extends State<DustSensorCard> {
                       child: Center(
                         child: GaugeWidget(
                           gaugeSize: gaugeSize,
-                          currentValue: ppm,
+                          currentValue: pm25,
                           minValue: 0,
-                          maxValue: 100,
-                          unit: appLocalizations.ppm,
+                          maxValue: 500,
+                          unit: "µg/m³",
                           currentValueFontSize: dustValueFontSize,
                         ),
                       ),
@@ -66,8 +67,8 @@ class _DustSensorCardState extends State<DustSensorCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _buildInfoTile(
-                              appLocalizations.ppm,
-                              ppm.toStringAsFixed(2),
+                              "PM2.5",
+                              '${pm25.toStringAsFixed(1)} µg/m³',
                               titleFontSize,
                               statFontSize),
                           const SizedBox(height: 16),
@@ -82,13 +83,13 @@ class _DustSensorCardState extends State<DustSensorCard> {
                 return Row(
                   children: [
                     Expanded(
-                      flex: screenWidth < 500 ? 40 : 35,
+                      flex: screenWidth < 500 ? 45 : 40,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _buildInfoTile(
-                              appLocalizations.ppm,
-                              ppm.toStringAsFixed(2),
+                              "PM2.5",
+                              '${pm25.toStringAsFixed(1)} µg/m³',
                               titleFontSize * 0.8,
                               statFontSize),
                           const SizedBox(height: 12),
@@ -98,13 +99,13 @@ class _DustSensorCardState extends State<DustSensorCard> {
                       ),
                     ),
                     Expanded(
-                      flex: screenWidth < 500 ? 60 : 65,
+                      flex: screenWidth < 500 ? 55 : 60,
                       child: GaugeWidget(
                           gaugeSize: gaugeSize,
-                          currentValue: ppm,
+                          currentValue: pm25,
                           minValue: 0,
-                          maxValue: 100,
-                          unit: appLocalizations.ppm,
+                          maxValue: 500,
+                          unit: "µg/m³",
                           currentValueFontSize: dustValueFontSize),
                     ),
                   ],
@@ -131,7 +132,7 @@ class _DustSensorCardState extends State<DustSensorCard> {
         ),
         const SizedBox(height: 4),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             border: Border.all(color: instrumentStatBoxColor),
             borderRadius: BorderRadius.circular(8),
