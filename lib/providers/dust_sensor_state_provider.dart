@@ -116,27 +116,35 @@ class DustSensorStateProvider extends ChangeNotifier {
       });
 
       _dustTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-        List<int> rxBytes = await scienceLab.readUARTBytes(10);
+        int available = await scienceLab.getUART2BytesAvailable();
+        if (available < 10) {
+          logger.d("SDS011: only $available bytes available, skipping");
+          return;
+        }
 
-        if (rxBytes.length == 10 && rxBytes[0] == 0xAA && rxBytes[9] == 0xAB) {
-          int checksum = 0;
-          for (int i = 2; i <= 7; i++) {
-            checksum += rxBytes[i];
+        List<int> rxBytes = await scienceLab.readUARTBytes(20);
+
+        int startIdx = -1;
+        for (int i = 0; i <= rxBytes.length - 10; i++) {
+          if (rxBytes[i] == 0xAA && rxBytes[i + 9] == 0xAB) {
+            startIdx = i;
+            break;
           }
+        }
+        if (startIdx == -1) return;
 
-          if ((checksum & 0xFF) == rxBytes[8]) {
-            int pm25Low = rxBytes[2];
-            int pm25High = rxBytes[3];
-            int pm10Low = rxBytes[4];
-            int pm10High = rxBytes[5];
+        final frame = rxBytes.sublist(startIdx, startIdx + 10);
+        int checksum = 0;
+        for (int i = 2; i <= 7; i++) {
+          checksum += frame[i];
+        }
 
-            _currentPM25 = ((pm25High * 256) + pm25Low) / 10.0;
-            _currentPM10 = ((pm10High * 256) + pm10Low) / 10.0;
-
-            notifyListeners();
-          } else {
-            logger.w("SDS011: Checksum packet error");
-          }
+        if ((checksum & 0xFF) == frame[8]) {
+          _currentPM25 = ((frame[3] * 256) + frame[2]) / 10.0;
+          _currentPM10 = ((frame[5] * 256) + frame[4]) / 10.0;
+          notifyListeners();
+        } else {
+          logger.w("SDS011: Checksum error");
         }
       });
     } catch (e) {

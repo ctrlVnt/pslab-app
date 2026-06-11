@@ -1409,6 +1409,18 @@ class ScienceLab {
     }
   }
 
+  Future<int> getUART2BytesAvailable() async {
+    if (!isConnected()) return 0;
+    try {
+      mPacketHandler.sendByte(mCommandsProto.uart2);
+      mPacketHandler.sendByte(mCommandsProto.readUart2Status);
+      return await mPacketHandler.getInt();
+    } catch (e) {
+      logger.e("Error reading UART2 status: $e");
+      return 0;
+    }
+  }
+
   Future<List<int>> readUARTBytes(int bytesToRead) async {
     if (!isConnected()) return [];
 
@@ -1416,11 +1428,9 @@ class ScienceLab {
       mPacketHandler.sendByte(mCommandsProto.uart2);
       mPacketHandler.sendByte(mCommandsProto.readByte);
       mPacketHandler.sendByte(bytesToRead);
-
-      Uint8List rawBuffer = Uint8List(bytesToRead);
-      await mPacketHandler.read(rawBuffer, bytesToRead);
-
-      return rawBuffer.map((b) => b & 0xFF).toList();
+      Uint8List rawBuffer = Uint8List(bytesToRead + 1); // +1 for ACK
+      await mPacketHandler.read(rawBuffer, bytesToRead + 1);
+      return rawBuffer.sublist(0, bytesToRead).map((b) => b & 0xFF).toList();
     } catch (e) {
       logger.e("Error reading bytes from UART2: $e");
       return [];

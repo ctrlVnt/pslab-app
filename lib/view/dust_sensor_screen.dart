@@ -298,6 +298,9 @@ class _DustSensorScreenState extends State<DustSensorScreen> {
     return Consumer<DustSensorStateProvider>(
       builder: (context, provider, child) {
         final screenWidth = MediaQuery.of(context).size.width;
+        if (provider.getDustChartData().isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final cardMargin = screenWidth < 400 ? 8.0 : 12.0;
         final cardPadding = screenWidth < 400 ? 2.0 : 5.0;
         List<FlSpot> spots = provider.getDustChartData();
