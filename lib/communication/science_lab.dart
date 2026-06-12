@@ -1414,7 +1414,7 @@ class ScienceLab {
     try {
       mPacketHandler.sendByte(mCommandsProto.uart2);
       mPacketHandler.sendByte(mCommandsProto.readUart2Status);
-      return await mPacketHandler.getInt();
+      return await mPacketHandler.getByte();
     } catch (e) {
       logger.e("Error reading UART2 status: $e");
       return 0;

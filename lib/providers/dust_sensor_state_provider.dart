@@ -115,7 +115,7 @@ class DustSensorStateProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      _dustTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      _dustTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
         int available = await scienceLab.getUART2BytesAvailable();
         if (available < 10) {
           logger.d("SDS011: only $available bytes available, skipping");
